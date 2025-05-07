@@ -12,6 +12,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
+import cl.josbla.sandwichplanet.security.authserver.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -19,9 +20,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.User;
+//import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
@@ -33,7 +36,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+//import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
@@ -78,6 +81,8 @@ public class SecurityConfig {
 			throws Exception {
 		http
 			.authorizeHttpRequests((authorize) -> authorize
+				.requestMatchers("/api/usuarios/registro")
+				.permitAll()
 				.anyRequest().authenticated()
 			)
 			// Form login handles the redirect to the login page from the
@@ -88,7 +93,7 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-	@Bean 
+	/*@Bean 
 	public UserDetailsService userDetailsService() {
 		UserDetails userDetails = User.builder()
 				.username("pepe")
@@ -97,13 +102,27 @@ public class SecurityConfig {
 				.build();
 
 		return new InMemoryUserDetailsManager(userDetails);
+	}*/
+
+	@Bean
+	public UserDetailsService userDetailsService(UserRepository userRepository){
+		return userMail -> {
+			cl.josbla.sandwichplanet.security.authserver.models.User user = userRepository.findByMail(userMail)
+				.orElseThrow(()-> new RuntimeException("Code: -4 Error del servidor"));
+
+			return org.springframework.security.core.userdetails.User
+				.withUsername(user.getUsername())
+				.password(user.getPassword())
+				.roles(user.getRoles())
+				.build();
+		};
 	}
 
 	@Bean 
-	public RegisteredClientRepository registeredClientRepository() {
+	public RegisteredClientRepository registeredClientRepository(PasswordEncoder passwordEncoder) {
 		RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
 				.clientId("client-app")
-				.clientSecret("{noop}12345")
+				.clientSecret(passwordEncoder.encode("12345"))
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
@@ -156,4 +175,8 @@ public class SecurityConfig {
 		return AuthorizationServerSettings.builder().build();
 	}
 
+	@Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(); // Encriptación BCrypt
+    }
 }
