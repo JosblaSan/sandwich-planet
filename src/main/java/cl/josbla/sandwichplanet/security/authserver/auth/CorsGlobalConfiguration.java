@@ -15,7 +15,7 @@ public class CorsGlobalConfiguration {
         CorsConfiguration config = new CorsConfiguration();
         
         config.setAllowCredentials(true); // ¡Permite cookies!
-        config.setAllowedOrigins(List.of("http://localhost:4200")); // Frontend Angular
+        config.setAllowedOrigins(List.of("https://localhost:4200")); // Frontend Angular
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));

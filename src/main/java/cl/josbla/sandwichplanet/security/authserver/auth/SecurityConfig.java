@@ -148,8 +148,8 @@ public class SecurityConfig {
 				.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-				.redirectUri("http://localhost:4200/callback") // esto es clave
-				.postLogoutRedirectUri("http://localhost:8080/logout")
+				.redirectUri("https://localhost:4200/callback") // esto es clave
+				.postLogoutRedirectUri("https://localhost:8080/logout")
                 .scope("read")
                 .scope("write")
 				.scope(OidcScopes.OPENID)
@@ -218,7 +218,7 @@ public class SecurityConfig {
 	@Bean
 	public AuthorizationServerSettings authorizationServerSettings() {
 		return AuthorizationServerSettings.builder()
-				.issuer("http://localhost:9000") // ¡muy importante! Debe coincidir con `issuer` en Angular
+				.issuer("https://localhost:9000") // ¡muy importante! Debe coincidir con `issuer` en Angular
 				.build();
 	}
 
