@@ -1,8 +1,7 @@
 package cl.josbla.sandwichplanet.security.authserver.dto;
 
-import java.util.List;
-
 import lombok.Data;
+import java.util.List;
 
 @Data
 public class UsuarioRespuestaDTO {
@@ -13,5 +12,10 @@ public class UsuarioRespuestaDTO {
     private String telefono;
     private String mail;
     private List<String> direcciones;
-    private String roles; // "USER", "ADMIN", etc.
+    private String roles; // Muestra el rol asignado por el backend
+
+    private String message; // Para mensajes de error controlados
+
+    public UsuarioRespuestaDTO() {}
+    public UsuarioRespuestaDTO(String message) { this.message = message; }
 }

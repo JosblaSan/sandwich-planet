@@ -35,13 +35,14 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false, unique = false) // Considera 'unique = true' si 'username' debe ser único
     private String username;
     @Column(nullable = false, unique = false)
     private String apellidoPat;
     private String apellidoMat;
     @Column(nullable = false, unique = true)
     private String rut;
+    @Column(unique = true) // Si el teléfono es opcional pero único cuando está presente
     private String telefono;
     @Column(nullable = false, unique = true)
     private String mail;
@@ -50,7 +51,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private String roles;
+    private String roles; // Ejemplo: "USER", "ADMIN"
 
     @CreatedDate
     @Column(updatable = false)
@@ -59,39 +60,15 @@ public class User implements UserDetails {
     @LastModifiedDate
     private LocalDateTime fechamodificacion;
 
+    // Métodos de UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + roles));
     }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-    
+    @Override public String getPassword() { return this.password; }
+    @Override public String getUsername() { return this.username; }
+    @Override public boolean isAccountNonExpired() { return true; }
+    @Override public boolean isAccountNonLocked() { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override public boolean isEnabled() { return true; }
 }
