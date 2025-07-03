@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Login Test</title>
+</head>
+<body>
+  <h1>Login Custom Simple</h1>
+  <form th:action="@{/login}" method="post">
+    <input type="text" name="username" />
+    <input type="password" name="password" />
+    <button type="submit">Entrar</button>
+  </form>
+  <div>
+    ¿No tienes cuenta?
+    <a href="https://localhost:4200/registro">Regístrate</a>
+  </div>
+</body>
+</html>
